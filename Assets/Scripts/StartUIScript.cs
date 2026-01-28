@@ -32,9 +32,11 @@ public class NetworkUI : MonoBehaviour
 
     private void StartClient()
     {
+
         // Use IP from input field or localhost
         string ip = string.IsNullOrEmpty(ipInput.text) ? "127.0.0.1" : ipInput.text;
         NetworkManager.Singleton.GetComponent<Unity.Netcode.Transports.UTP.UnityTransport>().ConnectionData.Address = ip;
+        NetworkManager.Singleton.GetComponent<Unity.Netcode.Transports.UTP.UnityTransport>().ConnectionData.Port = 7777;
         if (NetworkManager.Singleton.StartClient())
         {
             Debug.Log($"Started Client connecting to {ip}");
@@ -42,7 +44,7 @@ public class NetworkUI : MonoBehaviour
         }
         else
         {
-            Debug.LogError("Failed to start client!");
+            Debug.LogError($"Failed to start client connecting to {ip}!");
         }
     }
 
