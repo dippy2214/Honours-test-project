@@ -19,6 +19,8 @@ public class NetworkUI : MonoBehaviour
 
     private void StartHost()
     {
+        NetworkManager.Singleton.GetComponent<Unity.Netcode.Transports.UTP.UnityTransport>().ConnectionData.Address = "0.0.0.0";
+        NetworkManager.Singleton.GetComponent<Unity.Netcode.Transports.UTP.UnityTransport>().ConnectionData.Port = 7777;
         if (NetworkManager.Singleton.StartHost())
         {
             Debug.Log("Started Host");
