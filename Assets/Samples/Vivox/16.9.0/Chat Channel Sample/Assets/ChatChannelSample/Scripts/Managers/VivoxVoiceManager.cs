@@ -9,6 +9,8 @@ using Unity.Services.Authentication;
 
 public class VivoxVoiceManager : MonoBehaviour
 {
+    public const string worldProximityChannel = "world_voice";
+
     public const string LobbyChannelName = "lobbyChannel";
 
     // Check to see if we're about to be destroyed.
@@ -90,5 +92,29 @@ public class VivoxVoiceManager : MonoBehaviour
     bool CheckManualCredentials()
     {
         return !(string.IsNullOrEmpty(_issuer) && string.IsNullOrEmpty(_domain) && string.IsNullOrEmpty(_server));
+    }
+
+    async Task LeaveAllChannelsAsync()
+    {
+        foreach (var channel in VivoxService.Instance.ActiveChannels)
+        {
+            await VivoxService.Instance.LeaveChannelAsync(channel.Key);
+        }
+    }
+
+    public async Task JoinVoiceChannelAsync()
+    {
+        // Optional but recommended
+        await LeaveAllChannelsAsync();
+ 
+        Channel3DProperties options = new Channel3DProperties();
+
+        await VivoxService.Instance.JoinPositionalChannelAsync(
+            worldProximityChannel,
+            ChatCapability.AudioOnly,
+            options
+        );
+
+        Debug.Log($"Joined Vivox channel: {worldProximityChannel}");
     }
 }

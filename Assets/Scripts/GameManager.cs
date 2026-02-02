@@ -19,6 +19,7 @@ public class GameManager : NetworkBehaviour
     {
         if (!IsServer) return;
         players[clientId] = player;
+        AddPlayerToVoiceChatClientRpc(clientId);
         SetPlayerSpectatorModeClientRpc(clientId, false);
         CheckAllPlayersJoined();
     }
@@ -224,6 +225,13 @@ public class GameManager : NetworkBehaviour
             var renderer = playerObj.GetComponentInChildren<MeshRenderer>();
             renderer.material.color = color;
         }
+    }
+
+    [ClientRpc]
+    private void AddPlayerToVoiceChatClientRpc(ulong clientId)
+    {
+        if (NetworkManager.Singleton.LocalClientId != clientId) return;
+        VivoxVoiceManager.Instance.JoinVoiceChannelAsync();
     }
 
     private System.Collections.IEnumerator StartNextRoundAfterDelay()
