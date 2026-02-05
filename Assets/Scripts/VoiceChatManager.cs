@@ -13,7 +13,6 @@ public sealed class VivoxSetup : MonoBehaviour
     }
     private async void Start()
     {
-        // Unity lifecycle entry point — async logic delegated
         _ = InitializeAsync();
     }
 
@@ -22,11 +21,8 @@ public sealed class VivoxSetup : MonoBehaviour
         try
         {
             SubscribeToAuthenticationEvents();
-
-            // 1. Initialize Unity Services
             await UnityServices.InitializeAsync();
 
-            // 2. Authenticate (anonymous is fine for test projects)
             if (!AuthenticationService.Instance.IsSignedIn)
             {
                 await AuthenticationService.Instance.SignInAnonymouslyAsync();
@@ -34,10 +30,7 @@ public sealed class VivoxSetup : MonoBehaviour
 
             Debug.Log($"Authenticated as {AuthenticationService.Instance.PlayerId}");
 
-            // 3. Initialize Vivox
             await VivoxService.Instance.InitializeAsync();
-
-            // 4. Login to Vivox (this is REQUIRED)
             await VivoxService.Instance.LoginAsync();
 
             Debug.Log("Vivox login successful");
@@ -52,7 +45,6 @@ public sealed class VivoxSetup : MonoBehaviour
     {
         UnsubscribeFromAuthenticationEvents();
 
-        // Optional cleanup — safe, not strictly required for test projects
         if (VivoxService.Instance.IsLoggedIn)
         {
             _ = VivoxService.Instance.LogoutAsync();

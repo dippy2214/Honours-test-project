@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Services.Vivox;
+using SteamAudio;
 
 public class AudioSourceUpdater : MonoBehaviour
 {
@@ -22,16 +23,14 @@ public class AudioSourceUpdater : MonoBehaviour
 
         AudioSource src = participant.ParticipantTapAudioSource;
 
-        // REQUIRED for Steam Audio
         src.spatialize = true;
-        src.spatialBlend = 1.0f; // fully 3D
+        src.spatialBlend = 1.0f;
 
-        // IMPORTANT: disable Unity distance rolloff
         src.rolloffMode = AudioRolloffMode.Custom;
         src.SetCustomCurve(AudioSourceCurveType.CustomRolloff,
                             AnimationCurve.Linear(0, 1, 1, 1));
 
-        // Optional (recommended for voice)
         src.dopplerLevel = 0f;
+
     }
 }
