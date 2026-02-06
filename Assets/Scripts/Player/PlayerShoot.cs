@@ -34,7 +34,7 @@ public class PlayerShoot : NetworkBehaviour
     {
         Ray ray = new Ray(origin + (direction * 0.3f), direction);
 
-        RaycastHit[] hits = Physics.RaycastAll(ray, range);
+        RaycastHit[] hits = Physics.RaycastAll(ray);
 
         // Sort hits front-to-back for consistent first-hit behavior
         System.Array.Sort(hits, (a, b) => a.distance.CompareTo(b.distance));

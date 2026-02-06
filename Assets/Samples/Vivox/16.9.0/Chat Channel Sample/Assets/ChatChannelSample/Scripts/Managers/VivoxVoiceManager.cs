@@ -107,7 +107,7 @@ public class VivoxVoiceManager : MonoBehaviour
         // Optional but recommended
         await LeaveAllChannelsAsync();
  
-        Channel3DProperties options = new Channel3DProperties(40, 6, 1, AudioFadeModel.InverseByDistance);
+        Channel3DProperties options = new Channel3DProperties(32, 6, 1, AudioFadeModel.InverseByDistance);
 
         await VivoxService.Instance.JoinPositionalChannelAsync(
             worldProximityChannel,
