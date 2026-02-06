@@ -6,7 +6,7 @@ public class SpectatorMotor : MonoBehaviour
     public float moveSpeed = 10f;
     public float boostMultiplier = 3f;
     public float verticalSpeed = 8f;
-    public float lookSensitivity = 2f;
+    public float lookSensitivity = 20f;
 
     [Header("References")]
     public Transform cameraHolder; // assign the pivot of the camera
@@ -63,8 +63,8 @@ public class SpectatorMotor : MonoBehaviour
     {
         if (!isSpectating) return;
 
-        yaw += delta.x * lookSensitivity;
-        pitch -= delta.y * lookSensitivity;
+        yaw += delta.x * lookSensitivity * Time.deltaTime;
+        pitch -= delta.y * lookSensitivity * Time.deltaTime;
         pitch = Mathf.Clamp(pitch, -89f, 89f);
 
         cameraHolder.rotation = Quaternion.Euler(pitch, yaw, 0f);
