@@ -5,10 +5,21 @@ using System;
 
 public class PlayerShoot : NetworkBehaviour
 {
+    //not using range anymore
     [SerializeField] private float range = 10f;
     [SerializeField] private float damage = 10f;
+    float shootCooldown = 0.5f;
+    float shotTimer = 0.0f;
 
     private Camera cam;
+
+    public void Update()
+    {
+        if (shotTimer >= 0)
+        {
+            shotTimer -= Time.deltaTime;
+        }
+    }
 
     public override void OnNetworkSpawn()
     {
@@ -23,10 +34,15 @@ public class PlayerShoot : NetworkBehaviour
         //Debug.Log("Shooting (client-side raycast)");
         //Debug.Log($"[{OwnerClientId}] Shooting from {cam.transform.position} dir {cam.transform.forward}");
 
-        ulong shooterId = NetworkManager.Singleton.LocalClientId;
+        if (shotTimer <= 0.0f)
+        {
+            ulong shooterId = NetworkManager.Singleton.LocalClientId;
 
-        // Call server for authoritative raycast
-        ShootServerRpc(cam.transform.position, cam.transform.forward, range, damage, shooterId);
+            // Call server for authoritative raycast
+            ShootServerRpc(cam.transform.position, cam.transform.forward, range, damage, shooterId);
+
+            shotTimer = shootCooldown;
+        }
     }
 
     [ServerRpc]
