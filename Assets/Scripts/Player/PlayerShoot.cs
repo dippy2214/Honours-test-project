@@ -66,8 +66,9 @@ public class PlayerShoot : NetworkBehaviour
                         TargetClientIds = new ulong[] { hitNetObj.OwnerClientId }
                     }
                 });
-                break; // Stop at first valid target
+                
             }
+            break; // no wall bangs
         }
     }
 }
