@@ -5,11 +5,15 @@ using System;
 
 public class PlayerShoot : NetworkBehaviour
 {
+    public GameObject shotEffect;
+
     //not using range anymore
     [SerializeField] private float range = 10f;
     [SerializeField] private float damage = 10f;
-    float shootCooldown = 0.5f;
+    float shootCooldown = 0.3f;
     float shotTimer = 0.0f;
+    float shotEffectTime = 0.1f;
+    float shotEffectTimer = 0.0f;
 
     private Camera cam;
 
@@ -18,6 +22,14 @@ public class PlayerShoot : NetworkBehaviour
         if (shotTimer >= 0)
         {
             shotTimer -= Time.deltaTime;
+        }
+        if (shotEffectTimer >= 0)
+        {
+            shotEffectTimer -= Time.deltaTime;
+        }
+        else
+        {
+            shotEffect.SetActive(false);
         }
     }
 
@@ -40,7 +52,8 @@ public class PlayerShoot : NetworkBehaviour
 
             // Call server for authoritative raycast
             ShootServerRpc(cam.transform.position, cam.transform.forward, range, damage, shooterId);
-
+            shotEffect.SetActive(true);
+            shotEffectTimer = shotEffectTime;
             shotTimer = shootCooldown;
         }
     }
