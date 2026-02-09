@@ -1,19 +1,22 @@
 using System.IO;
 using UnityEngine;
 using Unity.Netcode;
+using UnityEngine.SceneManagement;
 
 public class GameLogger : MonoBehaviour
 {
     private string logFilePath;
 
-    private void Awake()
+    private void Start()
     {
         logFilePath = Path.Combine(
             Application.dataPath,
             $"match_log_{System.DateTime.Now:yyyyMMdd_HHmmss}.txt"
         );
-
+        string firstLine = $"My client ID is {NetworkManager.Singleton.LocalClientId} in scene " + SceneManager.GetActiveScene().name;
+        WriteLine(firstLine);
         WriteLine("Timestamp,Event,Details");
+
     }
 
     private void WriteLine(string line)

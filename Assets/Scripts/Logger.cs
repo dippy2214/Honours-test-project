@@ -7,8 +7,6 @@ public class Logger : MonoBehaviour
 {
     [Header("Logging Settings")]
     public float logInterval = 1.0f;   // Seconds between log entries
-    public bool logToConsole = true;
-
     private float timer;
     private int frameCount;
     private string logFilePath;
