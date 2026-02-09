@@ -11,6 +11,7 @@ public class PlayerUI : NetworkBehaviour
     [SerializeField] private Image healthbarFill;
     [SerializeField] private Image damageOverlay;
     [SerializeField] private TextMeshProUGUI promptText;
+    [SerializeField] private GameObject RoundEndText;
 
     [SerializeField] private float damageFlashDuration = 0.2f;
     [SerializeField] private float fadeSpeed = 1.5f;
@@ -30,6 +31,8 @@ public class PlayerUI : NetworkBehaviour
 
             promptText = playerCanvas.transform.Find("PromptText").GetComponent<TextMeshProUGUI>();
             promptText.text = "";
+
+            RoundEndText = playerCanvas.transform.Find("Round end text").gameObject;
         }
     }
 
@@ -69,7 +72,6 @@ public class PlayerUI : NetworkBehaviour
     {
         if (!IsOwner) return;
 
-        // Fade out damage overlay
         if (damageOverlay.color.a > 0f)
         {
             damageTimer += Time.deltaTime;
@@ -87,7 +89,6 @@ public class PlayerUI : NetworkBehaviour
             healthbarFill.fillAmount = value / playerHealth.maxHealth;
     }
 
-    // Call this from Interactable or other scripts to show a prompt
     public void SetPrompt(string message)
     {
         if (!IsOwner) return;
@@ -102,5 +103,16 @@ public class PlayerUI : NetworkBehaviour
 
         if (promptText != null)
             promptText.text = "";
+    }
+
+    public void RoundEndTextEnable(string text)
+    {
+        RoundEndText.GetComponent<TMP_Text>().text = text;
+        RoundEndText.SetActive(true);
+    }
+
+    public void RoundEndTextDisable()
+    {
+        RoundEndText.SetActive(false);
     }
 }

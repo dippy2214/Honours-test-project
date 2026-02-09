@@ -14,13 +14,11 @@ public class CubeScript : Interactable
         if (health != null)
         {
             float amount = heal ? 10f : -10f;
-            health.ModifyHealth(amount); // server only
+            health.ModifyHealth(amount, NetworkManager.LocalClientId);
         }
     }
 
-    // No need to touch UI here — PlayerUI reacts automatically via NetworkVariable
     protected override void ApplyEffectToLocalUI(PlayerUI playerUI)
     {
-        // Optional: can add local effects like sounds if needed
     }
 }

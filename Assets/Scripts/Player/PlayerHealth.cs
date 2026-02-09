@@ -14,7 +14,7 @@ public class PlayerHealth : NetworkBehaviour
         NetworkVariableWritePermission.Server
     );
 
-    public void ModifyHealth(float amount)
+    public void ModifyHealth(float amount, ulong damagerId)
     {
         if (!IsServer) return;
 
@@ -27,17 +27,17 @@ public class PlayerHealth : NetworkBehaviour
 
         if (Health.Value == 0)
         {
-            PlayerDeath();
+            PlayerDeath(damagerId);
         }
     }
 
-    public void PlayerDeath()
+    public void PlayerDeath(ulong damagerId)
     {
         if (!IsServer) return; 
 
         Debug.Log($"Player {OwnerClientId} died!");
         isAlive = false;
-        GameManager.Instance.RegisterDeath(OwnerClientId);
+        GameManager.Instance.RegisterDeath(OwnerClientId, damagerId);
         DisablePlayerBodyClientRpc();
     }
 

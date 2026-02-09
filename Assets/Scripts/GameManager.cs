@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
+using TMPro;
 
 public class GameManager : NetworkBehaviour
 {
@@ -8,17 +9,30 @@ public class GameManager : NetworkBehaviour
     public Color redTeamCol;
     public int playersPerTeam = 2;
     public float roundDelay = 5f;
+    private int roundIndex = 0;
     public List<GameObject> doors;
+    public NetworkVariable<int> redTeamWins;
+    public NetworkVariable<int> blueTeamWins;
 
     public static GameManager Instance;
     public Dictionary<ulong, NetworkObject> players = new Dictionary<ulong, NetworkObject>();
 
+    private GameLogger logger;
+
+    public void Start()
+    {
+        redTeamWins.Value = 0;
+        blueTeamWins.Value = 0;
+        logger = GetComponent<GameLogger>();
+    }
+    
     private void Awake() => Instance = this;
 
     public void RegisterPlayer(ulong clientId, NetworkObject player)
     {
         if (!IsServer) return;
         players[clientId] = player;
+        logger?.LogPlayerJoined(clientId);
         AddPlayerToVoiceChatClientRpc(clientId);
         SetPlayerSpectatorModeClientRpc(clientId, false);
         CheckAllPlayersJoined();
@@ -31,7 +45,6 @@ public class GameManager : NetworkBehaviour
         int connectedPlayers = NetworkManager.Singleton.ConnectedClients.Count;
         int registeredPlayers = players.Count;
 
-        // Example: start match when all expected players have joined
         if (registeredPlayers == (playersPerTeam * 2))
         {
             Debug.Log("All players registered. " + players.Count + " Starting match!");
@@ -41,9 +54,12 @@ public class GameManager : NetworkBehaviour
 
     private void StartRound()
     {
+        roundIndex++;
+        logger?.LogRoundStart(roundIndex);
         Debug.Log("Round starting!");
 
-        // Open doors at round start
+        RoundStartClientRPC();
+
         foreach (var door in doors)
         {
             var anim = door.GetComponent<Animator>();
@@ -51,7 +67,6 @@ public class GameManager : NetworkBehaviour
                 anim.SetBool("isOpen", true);
         }
 
-        // Reset all players
         var spawner = NetworkManager.Singleton.GetComponent<PlayerSpawner>();
         Transform[] teamASpawns = spawner.teamASpawns;
         Transform[] teamBSpawns = spawner.teamBSpawns;
@@ -69,11 +84,9 @@ public class GameManager : NetworkBehaviour
             PlayerLook look = playerObj.GetComponent<PlayerLook>();
             Material material = playerObj.GetComponent<MeshRenderer>().material;
 
-            // Reset health
-            health.ModifyHealth(100.0f);
+            health.ModifyHealth(100.0f, NetworkManager.LocalClientId);
             health.isAlive = true;
 
-            // Teleport to spawn
             Transform spawn;
             if (team.team == Team.A)
             {
@@ -102,10 +115,10 @@ public class GameManager : NetworkBehaviour
             var motor = playerObj.GetComponent<PlayerMotor>();
             if (motor != null) motor.enabled = false;
 
-            netTrans.Interpolate = false; // disable interpolation
+            netTrans.Interpolate = false; 
             playerObj.transform.position = spawn.position;
             playerObj.transform.rotation = spawn.rotation;
-            netTrans.Interpolate = true; // restore
+            netTrans.Interpolate = true; 
 
             if (motor != null) motor.enabled = true;
             if (cc != null) cc.enabled = true;
@@ -124,21 +137,24 @@ public class GameManager : NetworkBehaviour
 
             ResetPlayerRotationClientRpc(clientId, spawn.rotation.eulerAngles);
 
-            // Switch to player controls
             SetPlayerSpectatorModeClientRpc(clientId, false);
         }
     }
 
-    public void RegisterDeath(ulong clientId)
-    {
-        if (!IsServer || !players.ContainsKey(clientId)) return;
+    public void RegisterDeath(ulong clientId, ulong killerId = ulong.MaxValue)
+{
+    if (!IsServer || !players.ContainsKey(clientId)) return;
 
-        // Switch to spectator
-        SetPlayerSpectatorModeClientRpc(clientId, true);
+    logger?.LogPlayerDied(clientId);
 
-        players[clientId].GetComponent<PlayerHealth>().isAlive = false;
-        CheckRoundEnd();
-    }
+    if (killerId != ulong.MaxValue)
+        logger?.LogKill(killerId, clientId);
+
+    SetPlayerSpectatorModeClientRpc(clientId, true);
+
+    players[clientId].GetComponent<PlayerHealth>().isAlive = false;
+    CheckRoundEnd();
+}
 
     private void CheckRoundEnd()
     {
@@ -152,15 +168,30 @@ public class GameManager : NetworkBehaviour
             else teamBAlive = true;
         }
 
-        if (!teamAAlive) EndRound(Team.B);
-        else if (!teamBAlive) EndRound(Team.A);
+        if (!teamAAlive) 
+        {
+            blueTeamWins.Value += 1;
+            EndRound(Team.B);
+        }
+        else if (!teamBAlive) 
+        {
+            redTeamWins.Value += 1;
+            EndRound(Team.A);
+        }
+
+
     }
 
     private void EndRound(Team winner)
     {
-        Debug.Log($"Round over! {winner} wins.");
+        logger?.LogRoundEnd(
+            winner,
+            redTeamWins.Value,
+            blueTeamWins.Value
+        );
 
-        // Close doors
+        Debug.Log($"Round over! {winner} wins. total wins: " + (winner == Team.A ? redTeamWins.Value : blueTeamWins.Value));
+
         foreach (var door in doors)
         {
             var anim = door.GetComponent<Animator>();
@@ -168,11 +199,13 @@ public class GameManager : NetworkBehaviour
                 anim.SetBool("isOpen", false);
         }
 
+        RoundEndClientRPC(winner);
+
         if (IsServer)
             StartCoroutine(StartNextRoundAfterDelay());
 
-        // Optionally, you could schedule the next round:
-        // StartRound() after a short delay or via UI button
+
+
     }
 
     [ClientRpc]
@@ -205,14 +238,11 @@ public class GameManager : NetworkBehaviour
         var look = playerObj.GetComponent<PlayerLook>();
         var specMotor = playerObj.GetComponent<SpectatorMotor>();
 
-        // Reset root rotation
         playerObj.transform.rotation = Quaternion.Euler(rootEuler);
 
-        // Reset camera pitch
         look.xRotation = 0f;
         look.cam.transform.localRotation = Quaternion.identity;
 
-        // Reset spectator yaw/pitch
         specMotor.yaw = playerObj.transform.eulerAngles.y;
         specMotor.pitch = 0f;
     }
@@ -231,14 +261,25 @@ public class GameManager : NetworkBehaviour
     private void AddPlayerToVoiceChatClientRpc(ulong clientId)
     {
         if (NetworkManager.Singleton.LocalClientId != clientId) return;
-        VivoxVoiceManager.Instance.JoinVoiceChannelAsync();
+        _ = VivoxVoiceManager.Instance.JoinVoiceChannelAsync();
+    }
+
+    [ClientRpc]
+    private void RoundEndClientRPC(Team winner)
+    {
+        string text = (winner == Team.A ? "Round over. Red team wins!" : "Round over. Blue team wins!");
+        NetworkManager.LocalClient.PlayerObject.GetComponent<PlayerUI>().RoundEndTextEnable(text);
+    }
+
+    [ClientRpc]
+    private void RoundStartClientRPC()
+    {
+        NetworkManager.LocalClient.PlayerObject.GetComponent<PlayerUI>().RoundEndTextDisable();
     }
 
     private System.Collections.IEnumerator StartNextRoundAfterDelay()
     {
         yield return new WaitForSeconds(roundDelay);
-
-        // Optionally, you could reset team states, scores, or do a countdown UI here
 
         StartRound();
     }

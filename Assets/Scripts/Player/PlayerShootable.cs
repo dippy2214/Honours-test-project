@@ -11,10 +11,9 @@ public class PlayerShootable : ShootableBase
         healthComponent = GetComponent<PlayerHealth>();
     }
 
-    // Local client-side logic
-    public override void OnShot(float damage)
+    public override void OnShot(float damage, ulong shooterId)
     {
-        healthComponent.ModifyHealth(-damage);
+        healthComponent.ModifyHealth(-damage, shooterId);
         Debug.Log($"[{NetworkManager.Singleton.LocalClientId}] Took {damage} damage, remaining health: {healthComponent.Health.Value}");
     }
 }

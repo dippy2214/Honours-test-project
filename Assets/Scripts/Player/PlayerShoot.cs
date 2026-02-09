@@ -86,7 +86,7 @@ public class PlayerShoot : NetworkBehaviour
             
             if (shootable != null)
             {
-                shootable.OnShot(gunDamage);
+                shootable.OnShot(gunDamage, shooterClientId);
                 // Tell the owning client to apply OnShot
                 shootable.OnShotClientRpc(gunDamage, new ClientRpcParams
                 {

@@ -1,10 +1,11 @@
 using Unity.Netcode;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerSpawner : MonoBehaviour
 {
     public GameManager gameManager;
-    public GameObject playerPrefab;
+    public NetworkObject playerPrefab;
 
     public Transform[] teamASpawns;
     public Transform[] teamBSpawns;
@@ -43,8 +44,13 @@ public class PlayerSpawner : MonoBehaviour
         if (goTeamA) teamACount++; else teamBCount++;
 
         var player = Instantiate(playerPrefab, spawn.position, spawn.rotation);
-        player.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId);
+        player.SpawnAsPlayerObject(clientId);
         player.GetComponent<PlayerTeam>().team = goTeamA ? Team.A : Team.B;
+        if (player.IsOwner)
+        {
+            player.AddComponent<AudioListener>();
+        }
+
         gameManager.RegisterPlayer(clientId, player.GetComponent<NetworkObject>());
     }
 }

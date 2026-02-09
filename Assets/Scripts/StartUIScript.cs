@@ -5,11 +5,13 @@ using UnityEngine.UI;
 
 public class NetworkUI : MonoBehaviour
 {
+    public GameManager gameManager;
     public Canvas canvas;
     public Button hostButton;
     public Button clientButton;
     public TMP_InputField ipInput;
     public Camera menuCamera;
+    public TMP_InputField playerCountInput;
 
     private void Awake()
     {
@@ -55,6 +57,9 @@ public class NetworkUI : MonoBehaviour
         // Hide the UI
         if (canvas != null)
             canvas.gameObject.SetActive(false);
+
+        int playerCount = int.Parse(playerCountInput.text);
+        gameManager.playersPerTeam = playerCount;
 
         // Lock and hide the cursor for gameplay
         Cursor.lockState = CursorLockMode.Locked;

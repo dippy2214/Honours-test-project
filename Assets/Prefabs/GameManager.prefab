@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 1713797332881650605}
   - component: {fileID: 2490668093310010184}
   - component: {fileID: 1851594990341948949}
+  - component: {fileID: 2991407912129473488}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: Untagged
@@ -45,7 +46,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1059093005
+  GlobalObjectIdHash: 3230310332
   InScenePlacedSourceGlobalObjectIdHash: 0
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
@@ -77,3 +78,19 @@ MonoBehaviour:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
+  redTeamWins:
+    m_InternalValue: 0
+  blueTeamWins:
+    m_InternalValue: 0
+--- !u!114 &2991407912129473488
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3288345689301552014}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b0c94b5266896841a68b134e1e7d186, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
