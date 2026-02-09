@@ -58,14 +58,17 @@ public class NetworkUI : MonoBehaviour
         if (canvas != null)
             canvas.gameObject.SetActive(false);
 
-        int playerCount = int.Parse(playerCountInput.text);
-        gameManager.playersPerTeam = playerCount;
-
         // Lock and hide the cursor for gameplay
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
         if (menuCamera != null)
             menuCamera.gameObject.SetActive(false);
+            
+        if (NetworkManager.Singleton.IsServer)
+        {
+            int playerCount = int.Parse(playerCountInput.text);
+            gameManager.playersPerTeam = playerCount;
+        }
     }
 }
