@@ -38,11 +38,6 @@ public class Logger : MonoBehaviour
             string line = $"{timeStamp:F2},{fps:F2}\n";
             File.AppendAllText(logFilePath, line);
 
-            if (logToConsole)
-            {
-                Debug.Log($"[FPS] {fps:F2}");
-            }
-
             timer = 0f;
             frameCount = 0;
         }

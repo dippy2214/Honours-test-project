@@ -1,8 +1,0 @@
-Timestamp,Event,Details
-10.44,PlayerJoined,ClientId=0
-15.10,PlayerJoined,ClientId=1
-15.10,RoundStart,Round=1
-34.71,PlayerDied,ClientId=0
-34.71,Kill,Killer=1,Victim=0
-34.71,RoundEnd,Winner=B,RedWins=0,BlueWins=1
-39.71,RoundStart,Round=2
