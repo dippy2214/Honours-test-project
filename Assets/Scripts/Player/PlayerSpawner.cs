@@ -1,8 +1,6 @@
-using SteamAudio;
 using Unity.Netcode;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+using Unity.Services.Vivox;
 
 public class PlayerSpawner : MonoBehaviour
 {
@@ -50,6 +48,8 @@ public class PlayerSpawner : MonoBehaviour
         player.GetComponent<PlayerTeam>().team = goTeamA ? Team.A : Team.B;
 
         gameManager.RegisterPlayer(clientId, player.GetComponent<NetworkObject>());
+        AudioTapManager.Instance.RegisterLocalVivox(VivoxService.Instance.SignedInPlayerId);
+
     }
 
 
