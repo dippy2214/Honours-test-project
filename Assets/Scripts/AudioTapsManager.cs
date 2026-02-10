@@ -1,82 +1,89 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Services.Vivox;
 
 public class VivoxAutoTapManager : MonoBehaviour
 {
-    // Optionally assign a parent Transform for all participant taps
-    [SerializeField]
-    private Transform audioTapParent;
+    [Header("Optional parent for participant taps")]
+    [SerializeField] private Transform audioTapParent;
 
-    // Track created taps by participant ID
+    // Track active participant taps by PlayerId
     private readonly Dictionary<string, GameObject> _participantTaps = new();
 
-    System.Collections.IEnumerator Start()
+    [Header("Channel settings")]
+    [SerializeField] private string channelName = "MyChannel"; // Set your channel name here
+
+
+    private IEnumerator Start()
     {
-        // Wait until VivoxService is initialized
-        while (VivoxService.Instance == null)
+        // Wait for VivoxService and local login
+        while (VivoxService.Instance == null || !VivoxService.Instance.IsLoggedIn)
         {
             yield return null;
         }
 
-        Debug.Log("VivoxService ready, subscribing to participant events");
-        VivoxService.Instance.ChannelJoined += OnChannelJoined;
-    }
+        Debug.Log($"Joined channel {channelName}, subscribing to participant events.");
 
-    private void OnDisable()
-    {
-        VivoxService.Instance.ChannelJoined -= OnChannelJoined;
-        VivoxService.Instance.ParticipantAddedToChannel -= OnParticipantAdded;
-        VivoxService.Instance.ParticipantRemovedFromChannel -= OnParticipantRemoved;
-    }
+        while(VivoxService.Instance.ActiveChannels.Count == 0)
+            yield return null;
 
-    private void OnChannelJoined(string channelName)
-    {
-        Debug.Log($"Channel joined (audio connected): {channelName}");
-
-        // Now subscribe to participant events — media is now ready
+        // Subscribe to channel-specific participant events
         VivoxService.Instance.ParticipantAddedToChannel += OnParticipantAdded;
         VivoxService.Instance.ParticipantRemovedFromChannel += OnParticipantRemoved;
+
+        // Add already-present participants
+        foreach (var participant in VivoxService.Instance.ActiveChannels[VivoxVoiceManager.worldProximityChannel])
+        {
+            OnParticipantAdded(participant);
+        }
     }
 
     private void OnParticipantAdded(VivoxParticipant participant)
     {
-        Debug.Log($"Vivox participant joined: {participant.PlayerId}");
-        if (participant == null || participant.IsSelf) 
-            return; 
+        if (participant == null || participant.IsSelf)
+            return;
 
-        
+        Debug.Log($"Participant joined: {participant.PlayerId}");
 
-        // Create a VivoxParticipant audio tap GameObject
+        // Create a VivoxParticipant tap GameObject
         GameObject tapObj = participant.CreateVivoxParticipantTap($"{participant.PlayerId}_Tap");
 
         // Parent it if a container is assigned
         if (audioTapParent != null)
             tapObj.transform.SetParent(audioTapParent, false);
 
-        // Optionally configure the AudioSource on the tap
+        // Optionally configure AudioSource
         AudioSource audioSource = tapObj.GetComponent<AudioSource>();
         if (audioSource != null)
         {
             audioSource.loop = true;
-            audioSource.spatialBlend = 0f; // 0 = 2D audio, 1 = 3D
+            audioSource.spatialBlend = 0f; // 0 = 2D audio
         }
-        Debug.Log("found valid audio source");
 
-        // Store it so we can remove it later
+        // Store tap for cleanup
         _participantTaps[participant.PlayerId] = tapObj;
     }
 
     private void OnParticipantRemoved(VivoxParticipant participant)
     {
-        if (participant == null) return;
+        if (participant == null)
+            return;
 
-        Debug.Log($"Vivox participant left: {participant.PlayerId}");
+        Debug.Log($"Participant left: {participant.PlayerId}");
 
         if (_participantTaps.TryGetValue(participant.PlayerId, out GameObject tapObj))
         {
             Destroy(tapObj);
             _participantTaps.Remove(participant.PlayerId);
         }
+    }
+
+    private void OnDestroy()
+    {
+
+        VivoxService.Instance.ParticipantAddedToChannel -= OnParticipantAdded;
+        VivoxService.Instance.ParticipantRemovedFromChannel -= OnParticipantRemoved;
+
     }
 }

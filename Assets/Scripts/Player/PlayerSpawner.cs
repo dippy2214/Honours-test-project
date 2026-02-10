@@ -33,7 +33,7 @@ public class PlayerSpawner : MonoBehaviour
 
     private void OnClientConnected(ulong clientId)
     {
-        Debug.Log("gameManager client connection detected");
+        //Debug.Log("gameManager client connection detected");
         if (!NetworkManager.Singleton.IsServer)
             return;
 
@@ -48,7 +48,7 @@ public class PlayerSpawner : MonoBehaviour
         var player = Instantiate(playerPrefab, spawn.position, spawn.rotation);
         player.SpawnAsPlayerObject(clientId);
         player.GetComponent<PlayerTeam>().team = goTeamA ? Team.A : Team.B;
-        
+
         gameManager.RegisterPlayer(clientId, player.GetComponent<NetworkObject>());
     }
 
