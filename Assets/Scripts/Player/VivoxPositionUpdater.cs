@@ -10,9 +10,12 @@ public class VivoxProximityUpdater : MonoBehaviour
         {
             return;
         }
-        VivoxService.Instance.Set3DPosition(
-            gameObject, 
-            VivoxVoiceManager.worldProximityChannel
-        );
+        if (VivoxService.Instance.ActiveChannels.ContainsKey("world_voice"))
+        {   
+            VivoxService.Instance.Set3DPosition(
+                gameObject, 
+                VivoxVoiceManager.worldProximityChannel
+            );
+        }
     }
 }

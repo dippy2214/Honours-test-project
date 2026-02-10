@@ -5,26 +5,26 @@ using Unity.Services.Vivox;
 using SteamAudio;
 using UnityEngine.Audio;
 using Unity.Netcode;
+using Unity.Services.Vivox.AudioTaps;
 
 public class AudioSourceUpdater : MonoBehaviour
 {
     public AudioMixerGroup voiceChatMixer;
-    void Awake()
+    public GameObject audioTapsContainer;
+    IEnumerator Start()
+{
+    // Wait until VivoxService is initialized
+    while (VivoxService.Instance == null)
     {
-        
-        VivoxService.Instance.ParticipantAddedToChannel += OnParticipantAdded;
+        yield return null;
     }
+
+    Debug.Log("VivoxService ready, subscribing to participant events");
+    VivoxService.Instance.ParticipantAddedToChannel += OnParticipantAdded;
+}
 
     void OnParticipantAdded(VivoxParticipant participant)
     {
-        GameObject tapGO = participant.CreateVivoxParticipantTap(
-            participant.PlayerId,
-            true // spatialized
-        );
-
-        tapGO.transform.SetParent(NetworkManager.Singleton.LocalClient.PlayerObject.transform, false);
-        tapGO.transform.localPosition = UnityEngine.Vector3.zero;
-
         StartCoroutine(AttachSteamAudioWhenReady(participant));
     }
 
@@ -61,4 +61,6 @@ public class AudioSourceUpdater : MonoBehaviour
         
         steamAudioSource.reflections = true;
     }
+
+    
 }
