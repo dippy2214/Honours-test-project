@@ -75,7 +75,7 @@ public class AudioTapManager : NetworkBehaviour
         // Parent to player if known
         if (vivoxToClientID.TryGetValue(participant.PlayerId, out ulong clientId))
         {
-            tap.transform.SetParent(NetworkManager.Singleton.ConnectedClients[clientId].PlayerObject.transform);
+            tap.transform.SetParent(GetPlayerObjectByClientId(clientId).transform);
             tap.transform.localPosition = Vector3.zero;
             tap.transform.localRotation = Quaternion.identity;
         }
@@ -123,10 +123,18 @@ public class AudioTapManager : NetworkBehaviour
         // Only the target client processes this mapping
         if (NetworkManager.LocalClientId != targetClientId) return;
 
-        if (NetworkManager.Singleton.ConnectedClients.ContainsKey(playerOwnerId))
-        {
-            vivoxToClientID[vivoxId] = playerOwnerId;
-        }
+        vivoxToClientID[vivoxId] = playerOwnerId;
+
     }
     #endregion
+
+    public static NetworkObject GetPlayerObjectByClientId(ulong clientId)
+    {
+        foreach (var netObj in FindObjectsOfType<NetworkObject>())
+        {
+            if (netObj.IsPlayerObject && netObj.OwnerClientId == clientId)
+                return netObj;
+        }
+        return null;
+    }
 }
