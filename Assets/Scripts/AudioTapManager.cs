@@ -11,6 +11,7 @@ public class AudioTapManager : NetworkBehaviour
     // Local dictionary for mapping Vivox IDs to player GameObjects
     private Dictionary<string, GameObject> vivoxToPlayerGO = new Dictionary<string, GameObject>();
     private Dictionary<string, GameObject> participantTaps = new Dictionary<string, GameObject>();
+    private Dictionary<string, GameObject> pendingTaps = new Dictionary<string, GameObject>();
 
     private void Awake()
     {
@@ -68,20 +69,52 @@ public class AudioTapManager : NetworkBehaviour
     private void OnParticipantAdded(VivoxParticipant participant)
     {
         Debug.Log($"Vivox participant joined: {participant.DisplayName}");
+        
+        if (participant.IsSelf)
+            return;
 
         GameObject tap = participant.CreateVivoxParticipantTap(participant.DisplayName + "_AudioTap");
         participantTaps[participant.PlayerId] = tap;
 
-        // Parent to player if known
-        if (vivoxToPlayerGO.TryGetValue(participant.PlayerId, out GameObject playerGO))
+        // Try parenting immediately
+        if (!TryParentTap(participant.PlayerId, tap))
+        {
+            // If player not ready yet, queue it
+            pendingTaps[participant.PlayerId] = tap;
+            Debug.Log($"Queuing tap for Vivox ID {participant.PlayerId}, player not ready yet");
+        }
+    }
+
+    private bool TryParentTap(string vivoxId, GameObject tap)
+    {
+        if (vivoxToPlayerGO.TryGetValue(vivoxId, out GameObject playerGO))
         {
             tap.transform.SetParent(playerGO.transform);
             tap.transform.localPosition = Vector3.zero;
             tap.transform.localRotation = Quaternion.identity;
+            return true;
         }
-        else
+        return false;
+    }
+
+    private void Update()
+    {
+        if (pendingTaps.Count == 0) return;
+
+        List<string> readyKeys = new List<string>();
+
+        foreach (var kvp in pendingTaps)
         {
-            Debug.LogWarning($"Player GameObject for Vivox ID {participant.PlayerId} not found yet");
+            if (TryParentTap(kvp.Key, kvp.Value))
+            {
+                readyKeys.Add(kvp.Key);
+            }
+        }
+
+        // Remove successfully parented taps
+        foreach (var key in readyKeys)
+        {
+            pendingTaps.Remove(key);
         }
     }
 
