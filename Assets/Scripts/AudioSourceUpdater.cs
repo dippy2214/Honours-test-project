@@ -36,5 +36,9 @@ public class AudioSourceUpdater : MonoBehaviour
 
         SteamAudioSource steamAudioSource = src.gameObject.GetComponent<SteamAudioSource>();
         steamAudioSource.occlusion = true;
+        steamAudioSource.occlusionType = OcclusionType.Raycast;
+        steamAudioSource.occlusionInput = OcclusionInput.SimulationDefined;
+
+        steamAudioSource.reflections = true;
     }
 }
