@@ -47,5 +47,7 @@ public class AudioSourceUpdater : MonoBehaviour
         steamAudioSource.transmissionInput = TransmissionInput.SimulationDefined;
         
         steamAudioSource.reflections = true;
+
+        SteamAudioManager.NotifyAudioListenerChanged();
     }
 }
