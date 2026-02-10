@@ -34,6 +34,7 @@ public sealed class VivoxSetup : MonoBehaviour
             await VivoxService.Instance.LoginAsync();
 
             Debug.Log("Vivox login successful");
+            AudioTapManager.Instance.RegisterLocalVivox(VivoxService.Instance.SignedInPlayerId);
         }
         catch (Exception e)
         {
@@ -79,4 +80,6 @@ public sealed class VivoxSetup : MonoBehaviour
     {
         Debug.LogError($"Authentication failed: {request.Message}");
     }
+
+    
 }
