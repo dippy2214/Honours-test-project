@@ -1,6 +1,8 @@
+using SteamAudio;
 using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerSpawner : MonoBehaviour
 {
@@ -49,6 +51,10 @@ public class PlayerSpawner : MonoBehaviour
         if (player.IsOwner)
         {
             player.AddComponent<AudioListener>();
+            if (SceneManager.GetActiveScene().name == "RayVoiceLevel")
+            {
+                player.AddComponent<SteamAudioListener>();
+            }
         }
 
         gameManager.RegisterPlayer(clientId, player.GetComponent<NetworkObject>());

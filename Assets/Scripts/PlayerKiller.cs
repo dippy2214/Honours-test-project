@@ -4,21 +4,9 @@ using UnityEngine;
 
 public class PlayerKiller : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    void OnTriggerEnter(Collider collider)
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
-    void OnCollisionEnter(Collision collision)
-    {
-        PlayerHealth health = collision.gameObject.GetComponent<PlayerHealth>();
+        PlayerHealth health = collider.gameObject.GetComponent<PlayerHealth>();
         if (health)
         {
             health.Health.Value = 0;

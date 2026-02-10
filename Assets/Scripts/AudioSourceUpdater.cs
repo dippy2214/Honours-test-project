@@ -25,12 +25,16 @@ public class AudioSourceUpdater : MonoBehaviour
 
         src.spatialize = true;
         src.spatialBlend = 1.0f;
-
+        
         src.rolloffMode = AudioRolloffMode.Custom;
         src.SetCustomCurve(AudioSourceCurveType.CustomRolloff,
                             AnimationCurve.Linear(0, 1, 1, 1));
 
         src.dopplerLevel = 0f;
 
+        src.gameObject.AddComponent<SteamAudioSource>();
+
+        SteamAudioSource steamAudioSource = src.gameObject.GetComponent<SteamAudioSource>();
+        steamAudioSource.occlusion = true;
     }
 }
