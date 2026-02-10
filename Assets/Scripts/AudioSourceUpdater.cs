@@ -10,18 +10,17 @@ using Unity.Services.Vivox.AudioTaps;
 public class AudioSourceUpdater : MonoBehaviour
 {
     public AudioMixerGroup voiceChatMixer;
-    public GameObject audioTapsContainer;
     IEnumerator Start()
-{
-    // Wait until VivoxService is initialized
-    while (VivoxService.Instance == null)
     {
-        yield return null;
-    }
+        // Wait until VivoxService is initialized
+        while (VivoxService.Instance == null)
+        {
+            yield return null;
+        }
 
-    Debug.Log("VivoxService ready, subscribing to participant events");
-    VivoxService.Instance.ParticipantAddedToChannel += OnParticipantAdded;
-}
+        Debug.Log("VivoxService ready, subscribing to participant events");
+        VivoxService.Instance.ParticipantAddedToChannel += OnParticipantAdded;
+    }
 
     void OnParticipantAdded(VivoxParticipant participant)
     {
@@ -30,9 +29,11 @@ public class AudioSourceUpdater : MonoBehaviour
 
     IEnumerator AttachSteamAudioWhenReady(VivoxParticipant participant)
     {
+        Debug.Log($"participant added: {participant.DisplayName}");
         while (participant.ParticipantTapAudioSource == null)
             yield return null;
 
+        Debug.Log("tap found");
         AudioSource src = participant.ParticipantTapAudioSource;
 
         src.spatialize = true;
