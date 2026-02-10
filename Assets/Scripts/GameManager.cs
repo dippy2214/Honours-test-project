@@ -248,7 +248,7 @@ public class GameManager : NetworkBehaviour
     }
 
     [ClientRpc]
-    void SetPlayerColorClientRpc(NetworkObjectReference playerRef, Color color)
+    private void SetPlayerColorClientRpc(NetworkObjectReference playerRef, Color color)
     {
         if (playerRef.TryGet(out var playerObj))
         {

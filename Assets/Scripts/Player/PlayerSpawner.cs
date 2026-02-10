@@ -48,26 +48,9 @@ public class PlayerSpawner : MonoBehaviour
         var player = Instantiate(playerPrefab, spawn.position, spawn.rotation);
         player.SpawnAsPlayerObject(clientId);
         player.GetComponent<PlayerTeam>().team = goTeamA ? Team.A : Team.B;
-
-        SetUpAudioSourceClientRpc(clientId);
-
+        
         gameManager.RegisterPlayer(clientId, player.GetComponent<NetworkObject>());
     }
 
-    [ClientRpc]
-    void SetUpAudioSourceClientRpc(ulong clientId)
-    {
-        Debug.Log("audio source setup happening");
-        if (NetworkManager.Singleton.LocalClientId != clientId)
-            return;
 
-        NetworkObject playerObj = NetworkManager.Singleton.LocalClient.PlayerObject;
-        playerObj.AddComponent<AudioListener>();
-        if (SceneManager.GetActiveScene().name == "RayVoiceLevel")
-        {
-            SteamAudioListener steamAudioListener = playerObj.AddComponent<SteamAudioListener>();
-            steamAudioListener.applyReverb = true;
-            steamAudioListener.reverbType = ReverbType.Realtime;
-        }
-    }
 }
