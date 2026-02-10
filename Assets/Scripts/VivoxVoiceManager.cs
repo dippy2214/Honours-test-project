@@ -3,6 +3,7 @@ using Unity.Services.Core;
 using Unity.Services.Vivox;
 using System;
 using System.Threading.Tasks;
+using Unity.Netcode;
 #if AUTH_PACKAGE_PRESENT
 using Unity.Services.Authentication;
 #endif
@@ -73,6 +74,8 @@ public class VivoxVoiceManager : MonoBehaviour
         }
 
         await UnityServices.InitializeAsync(options);
+
+        string vivoxId = NetworkManager.Singleton.LocalClientId.ToString();
         await VivoxService.Instance.InitializeAsync();
 
     }
