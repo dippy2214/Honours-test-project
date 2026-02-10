@@ -5,21 +5,16 @@ using Unity.Services.Vivox;
 
 public class AudioTapManager : NetworkBehaviour
 {
-    // Singleton instance
     public static AudioTapManager Instance { get; private set; }
 
-    // Maps VivoxID -> Player GameObject
-    private Dictionary<string, GameObject> vivoxToPlayerGO = new Dictionary<string, GameObject>();
 
-    // Maps VivoxID -> AudioTap GameObject
+    // Local dictionary for mapping Vivox IDs to player GameObjects
+    private Dictionary<string, ulong> vivoxToClientID = new Dictionary<string, ulong>();
     private Dictionary<string, GameObject> participantTaps = new Dictionary<string, GameObject>();
-
-    // VivoxID -> AudioTap GameObject waiting for player GameObject
-    private Dictionary<string, GameObject> pendingTaps = new Dictionary<string, GameObject>();
 
     private void Awake()
     {
-        // Singleton setup
+        // Setup singleton
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
@@ -31,69 +26,37 @@ public class AudioTapManager : NetworkBehaviour
 
     public override void OnNetworkSpawn()
     {
-        // Subscribe to Vivox events
         VivoxService.Instance.ParticipantAddedToChannel += OnParticipantAdded;
         VivoxService.Instance.ParticipantRemovedFromChannel += OnParticipantRemoved;
 
-        // Track late joiners
         if (IsServer)
         {
             NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
         }
     }
 
-    private void Update()
-    {
-        if (pendingTaps.Count == 0) return;
-
-        // Try parenting any pending taps
-        List<string> readyKeys = new List<string>();
-        foreach (var kvp in pendingTaps)
-        {
-            if (TryParentTap(kvp.Key, kvp.Value))
-                readyKeys.Add(kvp.Key);
-        }
-
-        foreach (string key in readyKeys)
-            pendingTaps.Remove(key);
-    }
-
     #region Registration
 
-    // Call this after the local player logs into Vivox
+    // Call this after player logs into Vivox
     public void RegisterLocalVivox(string vivoxId)
     {
-        // Send mapping to server
+        // Inform all clients about this mapping
         RegisterVivoxServerRpc(NetworkManager.LocalClientId, vivoxId);
     }
 
     [ServerRpc(RequireOwnership = false)]
     private void RegisterVivoxServerRpc(ulong clientId, string vivoxId)
     {
-        // Broadcast mapping to all clients
+        // Broadcast to all clients
         RegisterVivoxClientRpc(clientId, vivoxId);
     }
 
     [ClientRpc]
     private void RegisterVivoxClientRpc(ulong clientId, string vivoxId)
     {
-        // Try to find player GameObject
-        var playerNetObj = NetworkManager.Singleton.SpawnManager.GetPlayerNetworkObject(clientId);
-        if (playerNetObj != null)
-        {
-            vivoxToPlayerGO[vivoxId] = playerNetObj.gameObject;
 
-            // If we have a pending tap, parent it now
-            if (pendingTaps.TryGetValue(vivoxId, out GameObject tap))
-            {
-                TryParentTap(vivoxId, tap);
-                pendingTaps.Remove(vivoxId);
-            }
-        }
-        else
-        {
-            Debug.LogWarning($"Player NetworkObject not ready for ClientId {clientId}, VivoxID {vivoxId}");
-        }
+        Debug.Log("registering player completed");
+        vivoxToClientID[vivoxId] = NetworkManager.Singleton.LocalClientId;
     }
 
     #endregion
@@ -103,19 +66,22 @@ public class AudioTapManager : NetworkBehaviour
     private void OnParticipantAdded(VivoxParticipant participant)
     {
         Debug.Log($"Vivox participant joined: {participant.DisplayName}");
-
         if (participant.IsSelf)
             return;
-
-        // Create audio tap
+            
         GameObject tap = participant.CreateVivoxParticipantTap(participant.DisplayName + "_AudioTap");
         participantTaps[participant.PlayerId] = tap;
 
-        // Try parenting now, otherwise queue
-        if (!TryParentTap(participant.PlayerId, tap))
+        // Parent to player if known
+        if (vivoxToClientID.TryGetValue(participant.PlayerId, out ulong clientId))
         {
-            pendingTaps[participant.PlayerId] = tap;
-            Debug.Log($"Queuing tap for Vivox ID {participant.PlayerId}, player object not ready yet");
+            tap.transform.SetParent(NetworkManager.Singleton.ConnectedClients[clientId].PlayerObject.transform);
+            tap.transform.localPosition = Vector3.zero;
+            tap.transform.localRotation = Quaternion.identity;
+        }
+        else
+        {
+            Debug.LogWarning($"Player GameObject for Vivox ID {participant.PlayerId} not found yet");
         }
     }
 
@@ -126,65 +92,6 @@ public class AudioTapManager : NetworkBehaviour
             Destroy(tap);
             participantTaps.Remove(participant.PlayerId);
         }
-
-        if (pendingTaps.ContainsKey(participant.PlayerId))
-            pendingTaps.Remove(participant.PlayerId);
-    }
-
-    #endregion
-
-    #region Late Joiner Support
-
-    private void OnClientConnected(ulong clientId)
-    {
-        // Send all current Vivox mappings to the late joiner
-        foreach (var kvp in vivoxToPlayerGO)
-        {
-            if (kvp.Value.TryGetComponent<NetworkObject>(out NetworkObject netObj))
-            {
-                SendVivoxMappingToLateJoinerClientRpc(netObj.OwnerClientId, kvp.Key, clientId);
-            }
-        }
-    }
-
-    [ClientRpc]
-    private void SendVivoxMappingToLateJoinerClientRpc(ulong playerOwnerId, string vivoxId, ulong targetClientId)
-    {
-        // Only the late joiner processes this
-        if (NetworkManager.LocalClientId != targetClientId) return;
-
-        var playerNetObj = NetworkManager.Singleton.SpawnManager.GetPlayerNetworkObject(playerOwnerId);
-        if (playerNetObj != null)
-        {
-            vivoxToPlayerGO[vivoxId] = playerNetObj.gameObject;
-
-            // Parent any pending tap
-            if (pendingTaps.TryGetValue(vivoxId, out GameObject tap))
-            {
-                TryParentTap(vivoxId, tap);
-                pendingTaps.Remove(vivoxId);
-            }
-        }
-        else
-        {
-            Debug.LogWarning($"Late joiner: Player object not ready for OwnerId {playerOwnerId}, VivoxID {vivoxId}");
-        }
-    }
-
-    #endregion
-
-    #region Helper
-
-    private bool TryParentTap(string vivoxId, GameObject tap)
-    {
-        if (vivoxToPlayerGO.TryGetValue(vivoxId, out GameObject playerGO))
-        {
-            tap.transform.SetParent(playerGO.transform);
-            tap.transform.localPosition = Vector3.zero;
-            tap.transform.localRotation = Quaternion.identity;
-            return true;
-        }
-        return false;
     }
 
     #endregion
@@ -196,10 +103,30 @@ public class AudioTapManager : NetworkBehaviour
             VivoxService.Instance.ParticipantAddedToChannel -= OnParticipantAdded;
             VivoxService.Instance.ParticipantRemovedFromChannel -= OnParticipantRemoved;
         }
+    }
 
-        if (NetworkManager.Singleton != null)
+    #region Late Joiner Support
+
+    private void OnClientConnected(ulong clientId)
+    {
+        // Send all current Vivox mappings to the late joiner
+        foreach (var kvp in vivoxToClientID)
         {
-            NetworkManager.Singleton.OnClientConnectedCallback -= OnClientConnected;
+
+            SendVivoxMappingToLateJoinerClientRpc(NetworkManager.Singleton.LocalClientId, kvp.Key, clientId);
         }
     }
+
+    [ClientRpc]
+    private void SendVivoxMappingToLateJoinerClientRpc(ulong playerOwnerId, string vivoxId, ulong targetClientId)
+    {
+        // Only the target client processes this mapping
+        if (NetworkManager.LocalClientId != targetClientId) return;
+
+        if (NetworkManager.Singleton.ConnectedClients.ContainsKey(playerOwnerId))
+        {
+            vivoxToClientID[vivoxId] = playerOwnerId;
+        }
+    }
+    #endregion
 }
