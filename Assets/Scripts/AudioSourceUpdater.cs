@@ -43,8 +43,9 @@ public class AudioSourceUpdater : MonoBehaviour
         steamAudioSource.occlusionInput = OcclusionInput.SimulationDefined;
 
         steamAudioSource.transmission = true;
+        steamAudioSource.transmissionType = TransmissionType.FrequencyIndependent;
+        steamAudioSource.transmissionInput = TransmissionInput.SimulationDefined;
         
-
         steamAudioSource.reflections = true;
     }
 }

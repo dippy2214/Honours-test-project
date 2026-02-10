@@ -53,8 +53,9 @@ public class PlayerSpawner : MonoBehaviour
             player.AddComponent<AudioListener>();
             if (SceneManager.GetActiveScene().name == "RayVoiceLevel")
             {
-                player.AddComponent<SteamAudioListener>();
-                player.GetComponent<SteamAudioListener>().applyReverb = true;
+                SteamAudioListener steamAudioListener = player.AddComponent<SteamAudioListener>();
+                steamAudioListener.applyReverb = true;
+                steamAudioListener.reverbType = ReverbType.Realtime;
             }
         }
 
