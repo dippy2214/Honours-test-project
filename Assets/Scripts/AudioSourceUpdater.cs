@@ -43,7 +43,7 @@ public class AudioSourceUpdater : MonoBehaviour
         src.rolloffMode = AudioRolloffMode.Custom;
         src.SetCustomCurve(
             AudioSourceCurveType.CustomRolloff,
-            AnimationCurve.Constant(0, 1000, 1f)
+            AnimationCurve.Linear(1, 1, 1, 0)
         );
 
         src.dopplerLevel = 0f;

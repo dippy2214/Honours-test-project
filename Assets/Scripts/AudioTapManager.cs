@@ -47,6 +47,7 @@ public class AudioTapManager : NetworkBehaviour
     [ServerRpc(RequireOwnership = false)]
     private void RegisterVivoxServerRpc(ulong clientId, string vivoxId)
     {
+        vivoxToClientID[vivoxId] = clientId;
         // Broadcast to all clients
         RegisterVivoxClientRpc(clientId, vivoxId);
     }
@@ -56,7 +57,7 @@ public class AudioTapManager : NetworkBehaviour
     {
 
         Debug.Log("registering player completed");
-        vivoxToClientID[vivoxId] = NetworkManager.Singleton.LocalClientId;
+        vivoxToClientID[vivoxId] = clientId;
     }
 
     #endregion
@@ -109,17 +110,18 @@ public class AudioTapManager : NetworkBehaviour
 
     private void OnClientConnected(ulong clientId)
     {
+        if (!IsServer) return;
         // Send all current Vivox mappings to the late joiner
         foreach (var kvp in vivoxToClientID)
         {
-
-            SendVivoxMappingToLateJoinerClientRpc(NetworkManager.Singleton.LocalClientId, kvp.Key, clientId);
+            SendVivoxMappingToLateJoinerClientRpc(kvp.Value, kvp.Key, clientId);
         }
     }
 
     [ClientRpc]
     private void SendVivoxMappingToLateJoinerClientRpc(ulong playerOwnerId, string vivoxId, ulong targetClientId)
     {
+        if (IsServer) return;
         // Only the target client processes this mapping
         if (NetworkManager.LocalClientId != targetClientId) return;
 
