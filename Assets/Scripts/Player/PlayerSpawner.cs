@@ -54,6 +54,7 @@ public class PlayerSpawner : MonoBehaviour
             if (SceneManager.GetActiveScene().name == "RayVoiceLevel")
             {
                 player.AddComponent<SteamAudioListener>();
+                player.GetComponent<SteamAudioListener>().applyReverb = true;
             }
         }
 

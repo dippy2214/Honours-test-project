@@ -42,6 +42,9 @@ public class AudioSourceUpdater : MonoBehaviour
         steamAudioSource.occlusionType = OcclusionType.Raycast;
         steamAudioSource.occlusionInput = OcclusionInput.SimulationDefined;
 
+        steamAudioSource.transmission = true;
+        
+
         steamAudioSource.reflections = true;
     }
 }
