@@ -57,6 +57,7 @@ public class PlayerSpawner : MonoBehaviour
     [ClientRpc]
     void SetUpAudioSourceClientRpc(ulong clientId)
     {
+        Debug.Log("audio source setup happening");
         if (NetworkManager.Singleton.LocalClientId != clientId)
             return;
 
