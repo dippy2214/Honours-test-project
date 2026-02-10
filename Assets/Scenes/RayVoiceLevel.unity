@@ -2900,6 +2900,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1f818fcca64109f48a916dfc90e9032b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  voiceChatMixer: {fileID: 24300002, guid: e93964a03021e534d8b0ff57fc45381f, type: 2}
 --- !u!1 &240208783
 GameObject:
   m_ObjectHideFlags: 0

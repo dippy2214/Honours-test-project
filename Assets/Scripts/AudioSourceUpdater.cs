@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Services.Vivox;
 using SteamAudio;
+using UnityEngine.Audio;
 
 public class AudioSourceUpdater : MonoBehaviour
 {
+    public AudioMixerGroup voiceChatMixer;
     void Awake()
     {
         VivoxService.Instance.ParticipantAddedToChannel += OnParticipantAdded;
@@ -31,6 +33,7 @@ public class AudioSourceUpdater : MonoBehaviour
                             AnimationCurve.Linear(0, 1, 1, 1));
 
         src.dopplerLevel = 0f;
+        src.outputAudioMixerGroup = voiceChatMixer;
 
         src.gameObject.AddComponent<SteamAudioSource>();
 
