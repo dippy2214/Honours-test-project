@@ -1,15 +1,20 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
 public class PlayerKiller : MonoBehaviour
 {
     void OnTriggerEnter(Collider collider)
     {
-        PlayerHealth health = collider.gameObject.GetComponent<PlayerHealth>();
-        if (health)
+        
+        if (NetworkManager.Singleton.IsServer)
         {
-            health.Health.Value = 0;
+            PlayerHealth health = collider.gameObject.GetComponent<PlayerHealth>();
+            if (health)
+            {
+                health.Health.Value = 0;
+            }
         }
     }
 }
