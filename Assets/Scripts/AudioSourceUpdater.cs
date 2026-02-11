@@ -40,11 +40,10 @@ public class AudioSourceUpdater : MonoBehaviour
         src.spatialBlend = 1.0f;
         
         src.spatialBlend = 1f;
-        src.rolloffMode = AudioRolloffMode.Custom;
-        src.SetCustomCurve(
-            AudioSourceCurveType.CustomRolloff,
-            AnimationCurve.Linear(1, 1, 1, 0)
-        );
+        src.rolloffMode = AudioRolloffMode.Linear;
+        src.minDistance = 6;
+        src.maxDistance = 20;
+       
 
         src.dopplerLevel = 0f;
         src.outputAudioMixerGroup = voiceChatMixer;
@@ -61,6 +60,11 @@ public class AudioSourceUpdater : MonoBehaviour
         steamAudioSource.transmissionInput = TransmissionInput.SimulationDefined;
         
         steamAudioSource.reflections = true;
+
+        steamAudioSource.distanceAttenuation = true;
+        steamAudioSource.distanceAttenuationInput = DistanceAttenuationInput.CurveDriven;
+
+        steamAudioSource.directivity = true;
     }
 
     
