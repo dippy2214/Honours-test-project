@@ -48,8 +48,14 @@ public class PlayerSpawner : MonoBehaviour
         player.GetComponent<PlayerTeam>().team = goTeamA ? Team.A : Team.B;
 
         gameManager.RegisterPlayer(clientId, player.GetComponent<NetworkObject>());
-        AudioTapManager.Instance.RegisterLocalVivox(VivoxService.Instance.SignedInPlayerId);
+        RegisterPlayerWithAudioTapManagerClientRpc(clientId);
+    }
 
+    [ClientRpc]
+    private void RegisterPlayerWithAudioTapManagerClientRpc(ulong clientId)
+    {
+        if (NetworkManager.Singleton.LocalClientId != clientId) return;
+        AudioTapManager.Instance.RegisterLocalVivox(VivoxService.Instance.SignedInPlayerId);
     }
 
 
