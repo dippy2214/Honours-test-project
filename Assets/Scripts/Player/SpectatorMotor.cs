@@ -67,7 +67,7 @@ public class SpectatorMotor : MonoBehaviour
         pitch -= delta.y * lookSensitivity * Time.deltaTime;
         pitch = Mathf.Clamp(pitch, -89f, 89f);
 
-        Debug.Log("pitch: " + pitch + ", yaw: " + yaw + ", look sensitivity: " + lookSensitivity);
+        //Debug.Log("pitch: " + pitch + ", yaw: " + yaw + ", look sensitivity: " + lookSensitivity);
 
         cameraHolder.rotation = Quaternion.Euler(pitch, yaw, 0f);
     }
