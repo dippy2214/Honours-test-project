@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
 using Unity.Services.Vivox;
+using UnityEditor.PackageManager;
 
 public class AudioTapManager : NetworkBehaviour
 {
@@ -55,7 +56,7 @@ public class AudioTapManager : NetworkBehaviour
     [ClientRpc]
     private void RegisterVivoxClientRpc(ulong clientId, string vivoxId)
     {
-
+        if (IsServer) return;
         Debug.Log("registering player completed");
         vivoxToClientID[vivoxId] = clientId;
     }
@@ -69,21 +70,27 @@ public class AudioTapManager : NetworkBehaviour
         Debug.Log($"Vivox participant joined: {participant.DisplayName}");
         if (participant.IsSelf)
             return;
-            
+
+        StartCoroutine(OnParticipantAddedIEnumerable(participant));
+        
+    }
+
+    private System.Collections.IEnumerator OnParticipantAddedIEnumerable(VivoxParticipant participant)
+    {
         GameObject tap = participant.CreateVivoxParticipantTap(participant.DisplayName + "_AudioTap");
         participantTaps[participant.PlayerId] = tap;
 
         // Parent to player if known
-        if (vivoxToClientID.TryGetValue(participant.PlayerId, out ulong clientId))
+        while (!vivoxToClientID.TryGetValue(participant.PlayerId, out ulong Id))
         {
-            tap.transform.SetParent(GetPlayerObjectByClientId(clientId).transform);
-            tap.transform.localPosition = Vector3.zero;
-            tap.transform.localRotation = Quaternion.identity;
+            Debug.Log($"couldnt find clientId matching playerId {participant.PlayerId}");
+            yield return null;        
         }
-        else
-        {
-            Debug.LogWarning($"Player GameObject for Vivox ID {participant.PlayerId} not found yet");
-        }
+        vivoxToClientID.TryGetValue(participant.PlayerId, out ulong clientId);
+        tap.transform.SetParent(GetPlayerObjectByClientId(clientId).transform);
+        tap.transform.localPosition = Vector3.zero;
+        tap.transform.localRotation = Quaternion.identity;
+        Debug.Log($"found tap {tap} for client {clientId}");
     }
 
     private void OnParticipantRemoved(VivoxParticipant participant)
