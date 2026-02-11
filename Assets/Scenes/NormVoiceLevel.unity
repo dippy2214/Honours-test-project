@@ -1240,6 +1240,11 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 163732337}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &173780527 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2114093994605454909, guid: aa792260c6c64d1479dc4b82fd7ea867, type: 3}
+  m_PrefabInstance: {fileID: 835804367}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &177157173
 GameObject:
   m_ObjectHideFlags: 0
@@ -6274,6 +6279,11 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 522766559}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &529446042 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2114093994605454909, guid: aa792260c6c64d1479dc4b82fd7ea867, type: 3}
+  m_PrefabInstance: {fileID: 302271324}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &540392208
 GameObject:
   m_ObjectHideFlags: 0
@@ -10055,6 +10065,11 @@ Transform:
   - {fileID: 414421570}
   m_Father: {fileID: 1560439768}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &877753498 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2114093994605454909, guid: aa792260c6c64d1479dc4b82fd7ea867, type: 3}
+  m_PrefabInstance: {fileID: 687341573}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &877903173
 GameObject:
   m_ObjectHideFlags: 0
@@ -15524,6 +15539,11 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1288653133}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1292946295 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2114093994605454909, guid: aa792260c6c64d1479dc4b82fd7ea867, type: 3}
+  m_PrefabInstance: {fileID: 2048164915}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1327502981
 GameObject:
   m_ObjectHideFlags: 0
@@ -17162,6 +17182,11 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1463270931}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1466064245 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2114093994605454909, guid: aa792260c6c64d1479dc4b82fd7ea867, type: 3}
+  m_PrefabInstance: {fileID: 767865014}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1469985558
 GameObject:
   m_ObjectHideFlags: 0
@@ -18001,27 +18026,27 @@ PrefabInstance:
     - target: {fileID: 1851594990341948949, guid: 0a86a0bc36a5c314badac99c51c126ec, type: 3}
       propertyPath: doors.Array.data[0]
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1846481504}
     - target: {fileID: 1851594990341948949, guid: 0a86a0bc36a5c314badac99c51c126ec, type: 3}
       propertyPath: doors.Array.data[1]
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 529446042}
     - target: {fileID: 1851594990341948949, guid: 0a86a0bc36a5c314badac99c51c126ec, type: 3}
       propertyPath: doors.Array.data[2]
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1292946295}
     - target: {fileID: 1851594990341948949, guid: 0a86a0bc36a5c314badac99c51c126ec, type: 3}
       propertyPath: doors.Array.data[3]
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 173780527}
     - target: {fileID: 1851594990341948949, guid: 0a86a0bc36a5c314badac99c51c126ec, type: 3}
       propertyPath: doors.Array.data[4]
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1466064245}
     - target: {fileID: 1851594990341948949, guid: 0a86a0bc36a5c314badac99c51c126ec, type: 3}
       propertyPath: doors.Array.data[5]
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 877753498}
     - target: {fileID: 2490668093310010184, guid: 0a86a0bc36a5c314badac99c51c126ec, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 1406460757
@@ -21569,6 +21594,11 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1843769549}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1846481504 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 2114093994605454909, guid: aa792260c6c64d1479dc4b82fd7ea867, type: 3}
+  m_PrefabInstance: {fileID: 441256106}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1848483184
 GameObject:
   m_ObjectHideFlags: 0
@@ -23569,43 +23599,43 @@ PrefabInstance:
     - target: {fileID: 3558741814114870815, guid: 2b593c9d5df059a4099ee9f7d39f6a1c, type: 3}
       propertyPath: teamASpawns.Array.data[0]
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 976913697}
     - target: {fileID: 3558741814114870815, guid: 2b593c9d5df059a4099ee9f7d39f6a1c, type: 3}
       propertyPath: teamASpawns.Array.data[1]
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 345393393}
     - target: {fileID: 3558741814114870815, guid: 2b593c9d5df059a4099ee9f7d39f6a1c, type: 3}
       propertyPath: teamASpawns.Array.data[2]
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1027511816}
     - target: {fileID: 3558741814114870815, guid: 2b593c9d5df059a4099ee9f7d39f6a1c, type: 3}
       propertyPath: teamASpawns.Array.data[3]
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1329909534}
     - target: {fileID: 3558741814114870815, guid: 2b593c9d5df059a4099ee9f7d39f6a1c, type: 3}
       propertyPath: teamASpawns.Array.data[4]
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 2133472528}
     - target: {fileID: 3558741814114870815, guid: 2b593c9d5df059a4099ee9f7d39f6a1c, type: 3}
       propertyPath: teamBSpawns.Array.data[0]
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 574830326}
     - target: {fileID: 3558741814114870815, guid: 2b593c9d5df059a4099ee9f7d39f6a1c, type: 3}
       propertyPath: teamBSpawns.Array.data[1]
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 2099832499}
     - target: {fileID: 3558741814114870815, guid: 2b593c9d5df059a4099ee9f7d39f6a1c, type: 3}
       propertyPath: teamBSpawns.Array.data[2]
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1386358987}
     - target: {fileID: 3558741814114870815, guid: 2b593c9d5df059a4099ee9f7d39f6a1c, type: 3}
       propertyPath: teamBSpawns.Array.data[3]
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 1012906469}
     - target: {fileID: 3558741814114870815, guid: 2b593c9d5df059a4099ee9f7d39f6a1c, type: 3}
       propertyPath: teamBSpawns.Array.data[4]
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 438875034}
     - target: {fileID: 5476589305148066554, guid: 2b593c9d5df059a4099ee9f7d39f6a1c, type: 3}
       propertyPath: NetworkConfig.PlayerPrefab
       value: 

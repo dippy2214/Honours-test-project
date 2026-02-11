@@ -31,7 +31,10 @@ public class PlayerSpawner : MonoBehaviour
     {
         if (NetworkManager.Singleton.LocalClientId == clientId)
         {
-            AudioTapManager.Instance.RegisterLocalVivox(VivoxService.Instance.SignedInPlayerId);
+            if (AudioTapManager.Instance)
+            {
+                AudioTapManager.Instance.RegisterLocalVivox(VivoxService.Instance.SignedInPlayerId);
+            }
         }
         //Debug.Log("gameManager client connection detected");
         if (!NetworkManager.Singleton.IsServer)
@@ -50,13 +53,6 @@ public class PlayerSpawner : MonoBehaviour
         player.GetComponent<PlayerTeam>().team = goTeamA ? Team.A : Team.B;
 
         gameManager.RegisterPlayer(clientId, player.GetComponent<NetworkObject>());
-        RegisterPlayerWithAudioTapManagerClientRpc(clientId);
-    }
-
-    [ClientRpc]
-    private void RegisterPlayerWithAudioTapManagerClientRpc(ulong clientId)
-    {
-        if (NetworkManager.Singleton.LocalClientId != clientId) return;
     }
 
 
