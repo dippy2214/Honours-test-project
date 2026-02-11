@@ -17,6 +17,7 @@ public class AudioListenerSetup : NetworkBehaviour
             var steamListener = gameObject.AddComponent<SteamAudioListener>();
             steamListener.applyReverb = true;
             steamListener.reverbType = ReverbType.Realtime;
+            SteamAudioManager.NotifyAudioListenerChanged();
         }
     }
 }
