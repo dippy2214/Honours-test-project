@@ -13,7 +13,7 @@ public class PlayerKiller : MonoBehaviour
             PlayerHealth health = collider.gameObject.GetComponent<PlayerHealth>();
             if (health)
             {
-                health.Health.Value = 0;
+                health.ModifyHealth(-100, NetworkManager.Singleton.LocalClientId);
             }
         }
     }
