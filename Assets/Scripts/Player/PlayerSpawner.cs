@@ -15,10 +15,8 @@ public class PlayerSpawner : MonoBehaviour
 
     private void Start()
     {
-        Debug.Log("game manager enabled");
         if (NetworkManager.Singleton != null)
         {
-            Debug.Log("network manager found");
             NetworkManager.Singleton.OnClientConnectedCallback += OnClientConnected;
         }
     }
@@ -31,6 +29,10 @@ public class PlayerSpawner : MonoBehaviour
 
     private void OnClientConnected(ulong clientId)
     {
+        if (NetworkManager.Singleton.LocalClientId == clientId)
+        {
+            AudioTapManager.Instance.RegisterLocalVivox(VivoxService.Instance.SignedInPlayerId);
+        }
         //Debug.Log("gameManager client connection detected");
         if (!NetworkManager.Singleton.IsServer)
             return;
@@ -55,7 +57,6 @@ public class PlayerSpawner : MonoBehaviour
     private void RegisterPlayerWithAudioTapManagerClientRpc(ulong clientId)
     {
         if (NetworkManager.Singleton.LocalClientId != clientId) return;
-        AudioTapManager.Instance.RegisterLocalVivox(VivoxService.Instance.SignedInPlayerId);
     }
 
 
