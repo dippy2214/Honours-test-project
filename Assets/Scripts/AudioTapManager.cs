@@ -42,7 +42,7 @@ public class AudioTapManager : NetworkBehaviour
     public void RegisterLocalVivox(string vivoxId)
     {
         // Inform all clients about this mapping
-        RegisterVivoxServerRpc(NetworkManager.LocalClientId, vivoxId);
+        RegisterVivoxServerRpc(NetworkManager.Singleton.LocalClientId, vivoxId);
     }
 
     [ServerRpc(RequireOwnership = false)]
