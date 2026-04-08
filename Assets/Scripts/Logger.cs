@@ -13,14 +13,10 @@ public class Logger : MonoBehaviour
 
     void Awake()
     {
-        // Safe location for builds
         logFilePath = Path.Combine(Application.dataPath, "fps_log.txt");
 
-        // Write header once
-        if (!File.Exists(logFilePath))
-        {
-            File.WriteAllText(logFilePath, "Time(s),FPS\n");
-        }
+        File.WriteAllText(logFilePath, "Time(s),FPS\n");
+    
     }
 
     void Update()

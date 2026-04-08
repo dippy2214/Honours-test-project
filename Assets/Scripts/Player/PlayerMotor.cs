@@ -1,11 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
 public class PlayerMotor : NetworkBehaviour
 {
     private CharacterController controller;
+    private PlayerAudio playerAudio;
 
     private Vector3 velocity;
     private Vector2 serverMoveInput;
@@ -16,6 +15,9 @@ public class PlayerMotor : NetworkBehaviour
     public float gravity = -9.8f;
     public float jumpHeight = 3;
 
+    private float audioTimer = 0.5f;
+    private float audioTime = 0.6f;
+
     private bool lerpCrouch;
     private bool crouching;
     private float crouchTimer;
@@ -24,6 +26,7 @@ public class PlayerMotor : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         controller = GetComponent<CharacterController>();
+        playerAudio = GetComponent<PlayerAudio>();
     }
 
     void Update()
@@ -32,7 +35,6 @@ public class PlayerMotor : NetworkBehaviour
 
         isGrounded = controller.isGrounded;
 
-        // --- Handle crouch lerping ---
         if (lerpCrouch)
         {
             crouchTimer += Time.deltaTime;
@@ -58,7 +60,24 @@ public class PlayerMotor : NetworkBehaviour
         ProcessMove(serverMoveInput);
     }
 
-    // --- Called once per server physics tick ---
+    public void ProcessMoveAudio(Vector2 input)
+    {
+        Vector3 moveDirection = new Vector3(input.x, 0, input.y); 
+        if (moveDirection.magnitude > 0.01f && isGrounded)
+        {
+            audioTimer += Time.deltaTime;
+            if (audioTime < audioTimer)
+            {
+                playerAudio.playFootstep();
+                audioTimer = 0;
+            }
+        }
+        else
+        {
+            audioTimer = 0.5f;
+        }
+    }
+
     private void ProcessMove(Vector2 input)
     {
         Vector3 moveDirection = new Vector3(input.x, 0, input.y); 
@@ -71,7 +90,6 @@ public class PlayerMotor : NetworkBehaviour
         controller.Move(velocity * Time.deltaTime);
     }
 
-    // --- Input assignment (from client RPC) ---
     public void SetMoveInput(Vector2 input)
     {
         serverMoveInput = input;

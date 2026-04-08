@@ -10,7 +10,6 @@ public class PlayerCameraActivator : NetworkBehaviour
     {
         if (IsOwner)
         {
-            // enable this player's camera only for the owning client
             if (playerCamera != null)
                 playerCamera.gameObject.SetActive(true);
         }

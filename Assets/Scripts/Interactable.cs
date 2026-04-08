@@ -13,7 +13,6 @@ public abstract class Interactable : NetworkBehaviour
         return promptMessage;
     }
 
-    // Called by any client when interacting
     public void BaseInteract()
     {
         Debug.Log("Interacting");
@@ -21,11 +20,9 @@ public abstract class Interactable : NetworkBehaviour
         if (useEvents)
             GetComponent<InteractionEvent>().OnInteract.Invoke();
 
-        // Tell server to handle interaction
         InteractServerRpc();
     }
 
-    // Runs on the server
     [ServerRpc(RequireOwnership = false)]
     private void InteractServerRpc(ServerRpcParams rpcParams = default)
     {
@@ -34,10 +31,8 @@ public abstract class Interactable : NetworkBehaviour
         NetworkObject playerObject =
             NetworkManager.Singleton.ConnectedClients[interactingClientId].PlayerObject;
 
-        // Apply server-side logic (gameplay effects)
         Interact(playerObject);
 
-        // Tell owning client to update their UI
         var clientRpcParams = new ClientRpcParams
         {
             Send = new ClientRpcSendParams
@@ -48,13 +43,10 @@ public abstract class Interactable : NetworkBehaviour
         ApplyEffectClientRpc(clientRpcParams);
     }
 
-    // Override in subclasses for server-side logic
     protected virtual void Interact(NetworkObject player)
     {
-        // Example: apply damage server-side if needed
     }
 
-    // Runs only on the owning client
     [ClientRpc]
     private void ApplyEffectClientRpc(ClientRpcParams clientRpcParams = default)
     {
@@ -65,9 +57,7 @@ public abstract class Interactable : NetworkBehaviour
         }
     }
 
-    // Override in subclasses for client-local UI updates
     protected virtual void ApplyEffectToLocalUI(PlayerUI playerUI)
     {
-        // Example: playerUI.AddHealth(-10);
     }
 }

@@ -1,10 +1,10 @@
 using UnityEngine;
 using Unity.Netcode;
 using UnityEngine.Assertions;
-using System;
 
 public class PlayerShoot : NetworkBehaviour
 {
+    private PlayerAudio playerAudio;
     public GameObject shotEffect;
 
     //not using range anymore
@@ -16,6 +16,11 @@ public class PlayerShoot : NetworkBehaviour
     float shotEffectTimer = 0.0f;
 
     private Camera cam;
+
+    public void Start()
+    {
+        playerAudio = GetComponent<PlayerAudio>();
+    }
 
     public void Update()
     {
@@ -55,6 +60,7 @@ public class PlayerShoot : NetworkBehaviour
             shotEffect.SetActive(true);
             shotEffectTimer = shotEffectTime;
             shotTimer = shootCooldown;
+            playerAudio.playGunshot();
         }
     }
 

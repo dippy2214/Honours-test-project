@@ -10,7 +10,7 @@ public class GameManager : NetworkBehaviour
     public int playersPerTeam = 2;
     public float roundDelay = 5f;
     private int roundIndex = 0;
-    public List<GameObject> doors;
+    public List<DoorScript> doors;
     public NetworkVariable<int> redTeamWins;
     public NetworkVariable<int> blueTeamWins;
 
@@ -18,7 +18,6 @@ public class GameManager : NetworkBehaviour
     public Dictionary<ulong, NetworkObject> players = new Dictionary<ulong, NetworkObject>();
 
     private GameLogger logger;
-
     public void Start()
     {
         redTeamWins.Value = 0;
@@ -64,7 +63,10 @@ public class GameManager : NetworkBehaviour
         {
             var anim = door.GetComponent<Animator>();
             if (anim != null)
+            {
                 anim.SetBool("isOpen", true);
+                door.Open();
+            }
         }
 
         var spawner = NetworkManager.Singleton.GetComponent<PlayerSpawner>();
@@ -194,9 +196,7 @@ public class GameManager : NetworkBehaviour
 
         foreach (var door in doors)
         {
-            var anim = door.GetComponent<Animator>();
-            if (anim != null)
-                anim.SetBool("isOpen", false);
+            door.Close();
         }
 
         RoundEndClientRPC(winner);

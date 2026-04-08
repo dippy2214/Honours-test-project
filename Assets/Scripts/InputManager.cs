@@ -26,7 +26,6 @@ public class InputManager : NetworkBehaviour
         look = GetComponent<PlayerLook>();
         shoot = GetComponent<PlayerShoot>();
 
-        // Player action bindings
         onFoot.Jump.performed += ctx => { if (readyToSendInput) SendJumpServerRpc(); };
         onFoot.Crouch.performed += ctx => { if (readyToSendInput) SendCrouchServerRpc(); };
         onFoot.Sprint.performed += ctx => { if (readyToSendInput) SendSprintServerRpc(); };
@@ -54,13 +53,13 @@ public class InputManager : NetworkBehaviour
 
         if (onFoot.enabled)
         {
-            // Player movement via server
             Vector2 move = onFoot.Movement.ReadValue<Vector2>();
+            motor.ProcessMoveAudio(move);
             SendMoveServerRpc(move);
         }
         else if (spectatorMotor.isSpectating)
         {
-            HandleSpectatorInput(); // fully client-side
+            HandleSpectatorInput();
         }
     }
 
@@ -79,10 +78,7 @@ public class InputManager : NetworkBehaviour
             transform.Rotate(Vector3.up * deltaYaw);
             SendYawInputServerRpc(transform.eulerAngles.y);
         }
-        // Spectator look handled inside HandleSpectatorInput()
     }
-
-    // =================== Player vs Spectator ===================
 
     private void HandleSpectatorInput()
     {
@@ -130,8 +126,6 @@ public class InputManager : NetworkBehaviour
     {
         playerInput.Disable();
     }
-
-    // =================== SERVER RPCS (Player Only) ===================
 
     [ServerRpc]
     private void SendMoveServerRpc(Vector2 input)

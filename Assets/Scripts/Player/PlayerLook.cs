@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
@@ -21,7 +19,6 @@ public class PlayerLook : NetworkBehaviour
         }
     }
 
-    // Client-only pitch (up/down)
     public void ProcessLook(Vector2 input)
     {
         if (!IsOwner) return;

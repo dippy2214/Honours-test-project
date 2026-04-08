@@ -1,7 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
 using Unity.Netcode;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerInteract : NetworkBehaviour
@@ -13,7 +10,6 @@ public class PlayerInteract : NetworkBehaviour
     private LayerMask mask;
     private PlayerUI playerUI;
     private InputManager inputManager;
-    // Start is called before the first frame update
     public override void OnNetworkSpawn()
     {
         cam = GetComponent<PlayerLook>().cam;
@@ -21,7 +17,6 @@ public class PlayerInteract : NetworkBehaviour
         inputManager = GetComponent<InputManager>();
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (!IsOwner)

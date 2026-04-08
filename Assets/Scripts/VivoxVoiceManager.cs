@@ -75,7 +75,6 @@ public class VivoxVoiceManager : MonoBehaviour
 
         await UnityServices.InitializeAsync(options);
 
-        string vivoxId = NetworkManager.Singleton.LocalClientId.ToString();
         await VivoxService.Instance.InitializeAsync();
 
     }
@@ -110,7 +109,7 @@ public class VivoxVoiceManager : MonoBehaviour
         // Optional but recommended
         await LeaveAllChannelsAsync();
  
-        Channel3DProperties options = new Channel3DProperties(20, 6, 1, AudioFadeModel.InverseByDistance);
+        Channel3DProperties options = new Channel3DProperties(32, 6, 1, AudioFadeModel.InverseByDistance);
 
         await VivoxService.Instance.JoinPositionalChannelAsync(
             worldProximityChannel,
