@@ -8,10 +8,10 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/TestWorld.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
-  - enabled: 0
+  - enabled: 1
     path: Assets/Scenes/NormVoiceLevel.unity
     guid: 6e78aade41e011049bd98a26be893a36
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/RayVoiceLevel.unity
     guid: a1c74b2576cb04246beab01786c1d7f2
   m_configObjects: {}

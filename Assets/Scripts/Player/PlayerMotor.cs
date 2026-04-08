@@ -10,7 +10,11 @@ public class PlayerMotor : NetworkBehaviour
     private Vector2 serverMoveInput;
 
     private float speed = 5f;
-    private bool isGrounded;
+    private NetworkVariable<bool> isGrounded = new NetworkVariable<bool>(
+        true,
+        NetworkVariableReadPermission.Everyone,
+        NetworkVariableWritePermission.Server
+    );
 
     public float gravity = -9.8f;
     public float jumpHeight = 3;
@@ -19,9 +23,17 @@ public class PlayerMotor : NetworkBehaviour
     private float audioTime = 0.6f;
 
     private bool lerpCrouch;
-    private bool crouching;
+    private NetworkVariable<bool> isCrouching = new NetworkVariable<bool>(
+        true,
+        NetworkVariableReadPermission.Everyone,
+        NetworkVariableWritePermission.Server
+    );
     private float crouchTimer;
-    private bool sprinting;
+    private NetworkVariable<bool> isSprinting = new NetworkVariable<bool>(
+        true,
+        NetworkVariableReadPermission.Everyone,
+        NetworkVariableWritePermission.Server
+    );
 
     public override void OnNetworkSpawn()
     {
@@ -33,7 +45,7 @@ public class PlayerMotor : NetworkBehaviour
     {
         if (!IsServer) return;
 
-        isGrounded = controller.isGrounded;
+        isGrounded.Value = controller.isGrounded;
 
         if (lerpCrouch)
         {
@@ -41,7 +53,7 @@ public class PlayerMotor : NetworkBehaviour
             float p = crouchTimer / 1f;
             p *= p;
 
-            controller.height = crouching ?
+            controller.height = isCrouching.Value ?
                 Mathf.Lerp(controller.height, 1f, p) :
                 Mathf.Lerp(controller.height, 2f, p);
 
@@ -62,9 +74,11 @@ public class PlayerMotor : NetworkBehaviour
 
     public void ProcessMoveAudio(Vector2 input)
     {
+        
         Vector3 moveDirection = new Vector3(input.x, 0, input.y); 
-        if (moveDirection.magnitude > 0.01f && isGrounded)
+        if (moveDirection.magnitude > 0.01f && isGrounded.Value)
         {
+            Debug.Log("movement audio");
             audioTimer += Time.deltaTime;
             if (audioTime < audioTimer)
             {
@@ -84,7 +98,7 @@ public class PlayerMotor : NetworkBehaviour
         controller.Move(transform.TransformDirection(moveDirection) * speed * Time.deltaTime); 
         velocity.y += gravity * Time.deltaTime; 
 
-        if (isGrounded && velocity.y < 0) 
+        if (isGrounded.Value && velocity.y < 0) 
             velocity.y = -2f; 
 
         controller.Move(velocity * Time.deltaTime);
@@ -99,7 +113,7 @@ public class PlayerMotor : NetworkBehaviour
     {
         if (!IsServer) return;
 
-        if (isGrounded)
+        if (isGrounded.Value)
             velocity.y = Mathf.Sqrt(jumpHeight * -3f * gravity);
     }
 
@@ -107,7 +121,7 @@ public class PlayerMotor : NetworkBehaviour
     {
         if (!IsServer) return;
 
-        crouching = !crouching;
+        isCrouching.Value = !isCrouching.Value;
         crouchTimer = 0;
         lerpCrouch = true;
     }
@@ -116,7 +130,7 @@ public class PlayerMotor : NetworkBehaviour
     {
         if (!IsServer) return;
 
-        sprinting = !sprinting;
-        speed = sprinting ? 8f : 5f;
+        isSprinting.Value = !isSprinting.Value;
+        speed = isSprinting.Value ? 8f : 5f;
     }
 }
