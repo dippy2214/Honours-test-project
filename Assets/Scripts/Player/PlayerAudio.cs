@@ -22,13 +22,15 @@ public class PlayerAudio : NetworkBehaviour
         
     }
 
-    public void playFootstep()
+    public void playFootstep(bool isCrouching)
     {
+        float volume = footVolume;
         int clipIndex = Random.Range(0, footsteps.Length);
+        if (isCrouching) volume /= 2;
 
         if (IsOwner) {
             PlayFootstepSoundServerRpc(clipIndex);  
-            audioSource.PlayOneShot(footsteps[clipIndex], footVolume);
+            audioSource.PlayOneShot(footsteps[clipIndex], volume);
         }
         
     }

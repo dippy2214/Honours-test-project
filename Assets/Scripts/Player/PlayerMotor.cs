@@ -82,7 +82,7 @@ public class PlayerMotor : NetworkBehaviour
             audioTimer += Time.deltaTime;
             if (audioTime < audioTimer)
             {
-                playerAudio.playFootstep();
+                playerAudio.playFootstep(isCrouching.Value);
                 audioTimer = 0;
             }
         }
